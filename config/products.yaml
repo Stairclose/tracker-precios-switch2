@@ -7,11 +7,11 @@ products:
   - id: switch2_paris
     store: Paris
     url: "https://www.paris.cl/consola-nintendo-switch-2-ea-sports-fc-27-626979999.html?utm_domain=knasta.cl&cid=01M70YTBFPMVN49Z9M0WWBQPV9"
-    enabled: true
+    enabled: false
   - id: switch2_ripley
     store: Ripley
-    url: ""
-    enabled: false
+    url: "https://simple.ripley.cl/consola-nintendo-switch-2-en-color-negro-mpm10002883510?color_80=Negro&s=mdco&pos=2&catPos=2&p=1&ps=48&cat=NO*vj_nintendo&orig=PLP&prodNavFullCategory=Tecno+%3E+Nintendo"
+    enabled: true
   - id: switch2_pcfactory
     store: PC Factory
     url: ""
