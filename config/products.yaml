@@ -6,8 +6,8 @@ products:
     enabled: false
   - id: switch2_paris
     store: Paris
-    url: ""
-    enabled: false
+    url: "https://www.paris.cl/consola-nintendo-switch-2-ea-sports-fc-27-626979999.html?utm_domain=knasta.cl&cid=01M70YTBFPMVN49Z9M0WWBQPV9"
+    enabled: true
   - id: switch2_ripley
     store: Ripley
     url: ""
