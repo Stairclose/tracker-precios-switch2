@@ -89,6 +89,44 @@ def extract(html):
     return None
 
 
+def get_price(product):
+    """Returns (price, status). Never guesses a price."""
+    pid = str(product['id'])
+    provider = str(product.get('provider', 'html')).lower()
+    url = str(product.get('url', '')).strip()
+    if provider == 'mercadolibre':
+        item_id = str(product.get('item_id', '')).upper().strip()
+        if not re.fullmatch(r'MLC\d+', item_id):
+            return None, 'item_id inválido: se requiere ID de publicación MLC..., no ID de catálogo'
+        token = os.getenv('MELI_ACCESS_TOKEN', '').strip()
+        if not token:
+            return None, 'sin MELI_ACCESS_TOKEN; configurar OAuth antes de habilitar'
+        endpoint = f'https://api.mercadolibre.com/items/{item_id}/sale_price'
+        response = SESSION.get(endpoint, params={'context': 'channel_marketplace'},
+                               headers={'Authorization': f'Bearer {token}'}, timeout=15)
+        if response.status_code in (401, 403, 429):
+            return None, f'API HTTP {response.status_code}; revisar autorización/límites'
+        response.raise_for_status()
+        data = response.json()
+        if str(data.get('currency_id', '')).upper() != 'CLP':
+            return None, 'API no confirmó moneda CLP'
+        price = amount(data.get('amount'))
+        return (price, 'API precio confirmado' if price else 'API sin precio válido')
+    if provider in ('knasta', 'solotodo'):
+        return None, 'fuente de comparación pendiente de API o permiso de acceso; no se consulta automáticamente'
+    if provider != 'html':
+        return None, f'provider no reconocido: {provider}'
+    parsed = urlparse(url)
+    if parsed.scheme != 'https' or not parsed.netloc:
+        return None, 'URL HTTPS inválida'
+    response = SESSION.get(url, timeout=15, allow_redirects=True)
+    if response.status_code in (403, 429):
+        return None, f'acceso limitado HTTP {response.status_code}; deshabilitar esta fuente'
+    response.raise_for_status()
+    price = extract(response.text)
+    return (price, 'HTML precio confirmado' if price else 'HTML precio CLP no verificable')
+
+
 def main():
     config = yaml.safe_load(Path('config/products.yaml').read_text(encoding='utf-8')) or {}
     products = [p for p in config.get('products', []) if p.get('enabled')]
@@ -100,23 +138,14 @@ def main():
         pid = str(product['id'])
         url = str(product.get('url', '')).strip()
         store = str(product.get('store', pid))
-        parsed = urlparse(url)
-        if parsed.scheme != 'https' or not parsed.netloc:
-            print(f'{pid}: URL HTTPS inválida', file=sys.stderr)
-            continue
         try:
-            r = SESSION.get(url, timeout=15, allow_redirects=True)
-            if r.status_code in (403, 429):
-                print(f'{pid}: acceso limitado HTTP {r.status_code}; no reintentar en este ciclo')
-                continue
-            r.raise_for_status()
-            price = extract(r.text)
+            price, status = get_price(product)
             if price is None:
-                print(f'{pid}: precio CLP no verificable; no alertar')
+                print(f'{pid}: {status}; no alertar')
                 continue
             previous = state.get(pid, {})
             prev_price = previous.get('price')
-            print(f'{pid}: {price} CLP (anterior {prev_price})')
+            print(f'{pid}: {price} CLP (anterior {prev_price}); {status}')
             if price < THRESHOLD and (prev_price is None or prev_price >= THRESHOLD or price < prev_price):
                 notify(f'🎮 Nintendo Switch 2 bajo el objetivo\n{store}: ${price:,} CLP\nObjetivo: menos de ${THRESHOLD:,}\n{url}'.replace(',', '.'))
             state[pid] = {'price': price, 'checked_at': datetime.now(timezone.utc).isoformat(), 'url': url}
