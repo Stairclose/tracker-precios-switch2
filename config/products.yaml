@@ -2,7 +2,7 @@ products:
   # Reemplaza URL y habilita solo productos verificados.
   - id: switch2_falabella
     store: Falabella
-    url: "https://www.falabella.com/falabella-cl/product/156544787/nintendo-switch-2-consola-de-videojuegos-hibrida/156544788"
+    url: ""
     enabled: false
   - id: switch2_paris
     store: Paris
