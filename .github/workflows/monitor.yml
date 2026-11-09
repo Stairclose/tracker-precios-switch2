@@ -25,7 +25,7 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          PRICE_THRESHOLD_CLP: '560000'
+          PRICE_THRESHOLD_CLP: '600000'
         run: python monitor.py
       - name: Guardar estado entre ejecuciones
         run: |
