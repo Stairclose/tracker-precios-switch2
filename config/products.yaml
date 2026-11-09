@@ -1,22 +1,19 @@
 products:
-  # Reemplaza URL y habilita solo productos verificados.
-  - id: switch2_falabella
-    store: Falabella
-    url: ""
-    enabled: false
-  - id: switch2_paris
-    store: Paris
-    url: ""
-    enabled: false
-  - id: switch2_ripley
-    store: Ripley
-    url: ""
-    enabled: false
-  - id: switch2_pcfactory
-    store: PC Factory
-    url: ""
-    enabled: false
   - id: switch2_mercadolibre
     store: Mercado Libre
+    provider: mercadolibre
+    item_id: "MLC1604534647"
     url: "https://www.mercadolibre.cl/consola-nintendo-switch-2/p/MLC49200061"
-    enabled: true
+    enabled: false # activar después de comprobar ID y configurar MELI_ACCESS_TOKEN
+
+  - id: switch2_knasta
+    store: Knasta
+    provider: knasta
+    url: ""
+    enabled: false # requiere fuente de datos autorizada
+
+  - id: switch2_solotodo
+    store: SoloTodo
+    provider: solotodo
+    url: ""
+    enabled: false # requiere fuente de datos autorizada
