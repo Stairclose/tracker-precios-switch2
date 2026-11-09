@@ -18,5 +18,5 @@ products:
     enabled: false
   - id: switch2_mercadolibre
     store: Mercado Libre
-    url: ""
+    url: "https://www.mercadolibre.cl/consola-nintendo-switch-2/p/MLC49200061#polycard_client=search-desktop&be_origin=backend&overlay_label=not_apply&search_layout=grid&position=1&type=product&tracking_id=3b609735-3f7f-4497-b3b0-184096994354&overlay_label_capability=not_apply&wid=MLC1604534647&sid=search"
     enabled: false
