@@ -1,0 +1,22 @@
+products:
+  # Reemplaza URL y habilita solo productos verificados.
+  - id: switch2_falabella
+    store: Falabella
+    url: ""
+    enabled: false
+  - id: switch2_paris
+    store: Paris
+    url: ""
+    enabled: false
+  - id: switch2_ripley
+    store: Ripley
+    url: ""
+    enabled: false
+  - id: switch2_pcfactory
+    store: PC Factory
+    url: ""
+    enabled: false
+  - id: switch2_mercadolibre
+    store: Mercado Libre
+    url: ""
+    enabled: false
