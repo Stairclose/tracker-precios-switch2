@@ -1,21 +1,17 @@
-# Switch 2 Price Tracker Chile — GitHub Actions
+# Switch 2 Tracker Chile — v2 (GitHub Actions)
 
-Monitor de enlaces directos cada ~10 minutos, umbral estricto < $550.000 CLP, avisos Telegram. No requiere PC encendido, VPS ni Docker.
+## Estado real de las integraciones
+- Mercado Libre: adaptador API `sale_price` implementado; requiere token OAuth válido, permisos y un ID de publicación `MLC...` comprobado. **No se ha probado con credenciales reales**. El token expira y necesita renovación; la renovación automática aún no está implementada.
+- Knasta y SoloTodo: entradas preparadas, **sin consulta automática**. No hay integración autorizada verificada; se dejan deshabilitadas.
+- HTML genérico: disponible mediante `provider: html` solo para sitios que permiten consultas. No evita 403/429.
 
-## Instalación
-1. Crear repositorio **público** en GitHub (GitHub Actions estándar gratis). Nunca subir el token.
-2. Subir los archivos conservando `.github/workflows/monitor.yml`.
-3. En Settings > Secrets and variables > Actions > New repository secret, crear `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID`.
-4. Editar `config/products.yaml`: poner URLs HTTPS directas y `enabled: true`.
-5. En Settings > Actions > General > Workflow permissions seleccionar **Read and write permissions** (necesario para guardar historial), guardar.
-6. En Actions > Monitor Switch 2 > Run workflow, iniciar una prueba manual. Leer logs.
-7. Las ejecuciones programadas se activan desde la rama principal. Si falla `git push` revisar permisos, protecciones de rama y cambios concurrentes.
+## Instalación en GitHub
+1. Reemplaza `monitor.py`, `config/products.yaml` y `.github/workflows/monitor.yml` de tu repositorio por los del ZIP. Conserva `state/prices.json` y tus secrets de Telegram.
+2. Crea una aplicación en https://developers.mercadolibre.cl/crea-una-aplicacion-en-mercado-libre-es y completa el proceso OAuth 2.0 de autorización según la documentación oficial. **No basta con Client ID y Client Secret**.
+3. Añade el token de acceso en `Settings > Secrets and variables > Actions > New repository secret` con nombre `MELI_ACCESS_TOKEN`. No lo publiques.
+4. Confirma que `MLC1604534647` corresponde a la publicación y vendedor que deseas vigilar; el ID `MLC49200061` es de catálogo, no una publicación. Modifica `item_id` si corresponde y cambia `enabled: true`.
+5. En `Actions > Monitor Switch 2 > Run workflow`, ejecuta y revisa logs. La programación existente es cada 10 minutos aproximadamente.
 
-## Consideraciones
-- GitHub puede retrasar/omitir ejecuciones programadas; en repos públicos desactiva schedule tras 60 días sin actividad.
-- Los precios se leen de JSON-LD o metaetiquetas que declaren CLP; **no hay extractores específicos de tiendas probados**. Un mensaje `precio CLP no verificable` significa que requiere adaptación, no que esté sin oferta.
-- `state/prices.json` es público: contiene precios y URLs, nunca credenciales.
-- El monitor alerta al primer precio bajo umbral o ante una nueva reducción. No notifica continuamente el mismo precio.
-- El bot envía mensajes, pero NO responde a comandos `/estado` ni `/precios` en esta versión programada.
-- No intenta evadir CAPTCHA, 403 ni 429. Respetar condiciones de acceso y robots.txt.
-- Para verificar Telegram independientemente, consultar Bot API `sendMessage` con token y chat ID en un entorno seguro.
+**IMPORTANTE:** Los access tokens de Mercado Libre suelen expirar tras 6 horas; el refresh token rota y debe guardarse de forma segura. GitHub Actions no renueva el token en esta v2. Para monitorización 24/7 habrá que agregar renovación segura de credenciales, con persistencia protegida, o usar una fuente de precios autorizada sin OAuth. No guardes tokens en el archivo `state/prices.json` ni en el repositorio público.
+
+Si un proveedor no confirma precio en CLP, no se envía alerta. El proyecto no verifica por ahora stock ni descuentos exclusivos por tarjeta.
